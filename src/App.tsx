@@ -13,6 +13,9 @@ import MyCollaborations from './pages/Campaigns/MyCampaigns';
 import Applications from './pages/Applications';
 import Wallet from './pages/Wallet';
 import NotFound from './pages/NotFound';
+import CampaignDetails from './pages/Campaigns/CampaignDetails';
+import SubmitContent from './pages/Content/SubmitContent';
+import PendingContent from './pages/Content/PendingContent';
 
 const queryClient = new QueryClient();
 
@@ -97,6 +100,21 @@ const App = () => (
             <Route path="/collaborations" element={
               <ProtectedRoute>
                 <MyCollaborations />
+              </ProtectedRoute>
+            } />
+            <Route path="/collaborations/:id" element={
+              <ProtectedRoute>
+                <CampaignDetails />
+              </ProtectedRoute>
+            } />
+            <Route path="/content/submit/:id" element={
+              <ProtectedRoute>
+                <SubmitContent />
+              </ProtectedRoute>
+            } />
+            <Route path="/content/pending" element={
+              <ProtectedRoute>
+                <PendingContent />
               </ProtectedRoute>
             } />
             <Route path="/applications" element={

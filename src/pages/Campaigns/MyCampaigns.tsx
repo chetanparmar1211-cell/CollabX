@@ -173,7 +173,7 @@ const MyCampaigns = () => {
             </p>
           </div>
           <Button asChild>
-            <Link to="/campaigns/create">
+            <Link to="/collaborations/create">
               <Plus className="h-4 w-4 mr-2" />
               Create Campaign
             </Link>
@@ -349,7 +349,7 @@ const MyCampaigns = () => {
                     {/* Actions */}
                     <div className="flex flex-col space-y-2">
                       <Button size="sm" asChild>
-                        <Link to={`/campaigns/${campaign.id}`}>
+                        <Link to={`/collaborations/${campaign.id}`}>
                           <Eye className="h-4 w-4 mr-2" />
                           View Details
                         </Link>
@@ -357,7 +357,7 @@ const MyCampaigns = () => {
                       
                       {campaign.status === 'draft' && (
                         <Button size="sm" variant="outline" asChild>
-                          <Link to={`/campaigns/${campaign.id}/edit`}>
+                          <Link to={`/collaborations/${campaign.id}/edit`}>
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Campaign
                           </Link>
@@ -379,7 +379,7 @@ const MyCampaigns = () => {
                       )}
 
                       <Button size="sm" variant="outline" asChild>
-                        <Link to={`/campaigns/${campaign.id}/analytics`}>
+                        <Link to={`/collaborations/${campaign.id}/analytics`}>
                           <TrendingUp className="h-4 w-4 mr-2" />
                           Analytics
                         </Link>
@@ -405,7 +405,7 @@ const MyCampaigns = () => {
               </p>
               {!searchQuery && statusFilter === 'all' && (
                 <Button asChild>
-                  <Link to="/campaigns/create">Create Your First Campaign</Link>
+                  <Link to="/collaborations/create">Create Your First Campaign</Link>
                 </Button>
               )}
             </CardContent>
