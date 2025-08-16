@@ -34,7 +34,7 @@ const BrandDashboard = () => {
       changeType: 'positive',
       icon: TrendingUp,
       action: 'Create New Collaboration',
-      actionLink: '/campaigns/create'
+      actionLink: '/collaborations/create'
     },
     {
       title: 'Total Partnerships',
@@ -71,7 +71,7 @@ const BrandDashboard = () => {
       description: 'Launch a new product collaboration',
       icon: Plus,
       action: 'Get Started',
-      link: '/campaigns/create',
+      link: '/collaborations/create',
       color: 'bg-purple-500'
     },
     {
@@ -288,7 +288,7 @@ const BrandDashboard = () => {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Recent Collaborations</h2>
             <Button asChild>
-              <Link to="/campaigns">
+              <Link to="/collaborations">
                 View All
                 <ArrowUpRight className="h-4 w-4 ml-2" />
               </Link>
@@ -341,7 +341,7 @@ const BrandDashboard = () => {
                       </span>
                     </div>
                     <Button variant="outline" size="sm" asChild>
-                      <Link to={`/campaigns/${collaboration.id}`}>
+                                             <Link to={`/collaborations/${collaboration.id}`}>
                         View Details
                       </Link>
                     </Button>

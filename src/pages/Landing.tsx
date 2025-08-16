@@ -558,7 +558,7 @@ const Landing = () => {
             <div>
               <h3 className="font-semibold mb-4">For Creators</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/campaigns/discover" className="hover:text-white">Find Collaborations</Link></li>
+                <li><Link to="/collaborations/browse" className="hover:text-white">Find Collaborations</Link></li>
                 <li><Link to="/wallet" className="hover:text-white">Earnings</Link></li>
                 <li><Link to="/profile" className="hover:text-white">Profile</Link></li>
               </ul>

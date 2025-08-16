@@ -26,10 +26,25 @@ import {
   Clock,
   Package
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { listCollaborationsByBrand } from '@/services/db';
 
 const MyCampaigns = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const { user } = useAuth();
+  const [version, setVersion] = useState(0);
+
+  React.useEffect(() => {
+    const onChange = () => setVersion((v) => v + 1);
+    window.addEventListener('collabx-db-updated', onChange as EventListener);
+    return () => window.removeEventListener('collabx-db-updated', onChange as EventListener);
+  }, []);
+
+  const created = React.useMemo(() => {
+    if (!user || user.role !== 'brand') return [] as any[];
+    return listCollaborationsByBrand(user.id);
+  }, [user, version]);
 
   const campaigns = [
     {
@@ -173,12 +188,41 @@ const MyCampaigns = () => {
             </p>
           </div>
           <Button asChild>
-            <Link to="/campaigns/create">
+            <Link to="/collaborations/create">
               <Plus className="h-4 w-4 mr-2" />
               Create Campaign
             </Link>
           </Button>
         </div>
+
+        {/* DB-backed: Your Created Collaborations */}
+        {user?.role === 'brand' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Created Collaborations</CardTitle>
+              <CardDescription>Open details to manage applications and content</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {created.length === 0 ? (
+                <div className="text-gray-600">No collaborations yet.</div>
+              ) : (
+                <div className="space-y-3">
+                  {created.map((c) => (
+                    <div key={c.id} className="flex items-center justify-between border rounded-lg p-3">
+                      <div>
+                        <div className="font-medium text-gray-900">{c.productName}</div>
+                        <div className="text-sm text-gray-600">{c.brandName} • {new Date(c.createdAt).toLocaleDateString()}</div>
+                      </div>
+                      <Button size="sm" asChild>
+                        <Link to={`/collaborations/${c.id}`}>Open</Link>
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
@@ -349,7 +393,7 @@ const MyCampaigns = () => {
                     {/* Actions */}
                     <div className="flex flex-col space-y-2">
                       <Button size="sm" asChild>
-                        <Link to={`/campaigns/${campaign.id}`}>
+                        <Link to={`/collaborations/${campaign.id}`}>
                           <Eye className="h-4 w-4 mr-2" />
                           View Details
                         </Link>
@@ -357,7 +401,7 @@ const MyCampaigns = () => {
                       
                       {campaign.status === 'draft' && (
                         <Button size="sm" variant="outline" asChild>
-                          <Link to={`/campaigns/${campaign.id}/edit`}>
+                          <Link to={`/collaborations/${campaign.id}/edit`}>
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Campaign
                           </Link>
@@ -379,7 +423,7 @@ const MyCampaigns = () => {
                       )}
 
                       <Button size="sm" variant="outline" asChild>
-                        <Link to={`/campaigns/${campaign.id}/analytics`}>
+                        <Link to={`/collaborations/${campaign.id}/analytics`}>
                           <TrendingUp className="h-4 w-4 mr-2" />
                           Analytics
                         </Link>
@@ -405,7 +449,7 @@ const MyCampaigns = () => {
               </p>
               {!searchQuery && statusFilter === 'all' && (
                 <Button asChild>
-                  <Link to="/campaigns/create">Create Your First Campaign</Link>
+                  <Link to="/collaborations/create">Create Your First Campaign</Link>
                 </Button>
               )}
             </CardContent>

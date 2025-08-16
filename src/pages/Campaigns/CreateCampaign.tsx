@@ -11,10 +11,13 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { ArrowLeft, Upload, Plus, X, Info, Target, Users, DollarSign, Calendar, CheckCircle, Handshake, Gift } from 'lucide-react';
+import { createCollaboration } from '@/services/db';
+import { useAuth } from '@/contexts/AuthContext';
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     productName: '',
     productUrl: '',
@@ -76,13 +79,20 @@ const CreateCampaign = () => {
 
     setIsSubmitting(true);
     try {
-      // Mock collaboration creation - in real app, this would be an API call
-      console.log('Creating collaboration:', formData);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      navigate('/campaigns');
+      if (!user) throw new Error('Not authenticated');
+      createCollaboration(user, {
+        productName: formData.productName,
+        productUrl: formData.productUrl,
+        productImages: formData.productImages,
+        creatorsRequired: parseInt(formData.creatorsRequired || '0'),
+        collaborationType: formData.collaborationType as any,
+        deadline: new Date(formData.deadline).toISOString(),
+        description: formData.description,
+        requirements: formData.requirements,
+        category: formData.category,
+        investment: parseFloat(formData.investment || '0')
+      });
+      navigate('/collaborations');
     } catch (error) {
       console.error('Error creating collaboration:', error);
     } finally {
