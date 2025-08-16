@@ -26,10 +26,25 @@ import {
   Clock,
   Package
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { listCollaborationsByBrand } from '@/services/db';
 
 const MyCampaigns = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const { user } = useAuth();
+  const [version, setVersion] = useState(0);
+
+  React.useEffect(() => {
+    const onChange = () => setVersion((v) => v + 1);
+    window.addEventListener('collabx-db-updated', onChange as EventListener);
+    return () => window.removeEventListener('collabx-db-updated', onChange as EventListener);
+  }, []);
+
+  const created = React.useMemo(() => {
+    if (!user || user.role !== 'brand') return [] as any[];
+    return listCollaborationsByBrand(user.id);
+  }, [user, version]);
 
   const campaigns = [
     {
@@ -179,6 +194,35 @@ const MyCampaigns = () => {
             </Link>
           </Button>
         </div>
+
+        {/* DB-backed: Your Created Collaborations */}
+        {user?.role === 'brand' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Created Collaborations</CardTitle>
+              <CardDescription>Open details to manage applications and content</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {created.length === 0 ? (
+                <div className="text-gray-600">No collaborations yet.</div>
+              ) : (
+                <div className="space-y-3">
+                  {created.map((c) => (
+                    <div key={c.id} className="flex items-center justify-between border rounded-lg p-3">
+                      <div>
+                        <div className="font-medium text-gray-900">{c.productName}</div>
+                        <div className="text-sm text-gray-600">{c.brandName} • {new Date(c.createdAt).toLocaleDateString()}</div>
+                      </div>
+                      <Button size="sm" asChild>
+                        <Link to={`/collaborations/${c.id}`}>Open</Link>
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">

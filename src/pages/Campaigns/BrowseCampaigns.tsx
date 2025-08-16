@@ -64,6 +64,10 @@ const BrowseCampaigns = () => {
 	});
 
 	const onApply = (campaignId: string) => {
+		if (user?.role === 'brand') {
+			navigate(`/collaborations/${campaignId}`);
+			return;
+		}
 		if (!user) return;
 		try {
 			applyToCollaboration(campaignId, user);

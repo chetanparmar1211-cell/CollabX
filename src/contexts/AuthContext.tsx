@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Mock login - in real app, this would be an API call
       const mockUser: User = {
-        id: '1',
+        id: email,
         email,
         name: email.includes('brand') ? 'Brand User' : email.includes('admin') ? 'Admin User' : 'Creator User',
         role: email.includes('brand') ? 'brand' : email.includes('admin') ? 'admin' : 'creator',
@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Mock signup - in real app, this would be an API call
       const mockUser: User = {
-        id: Date.now().toString(),
+        id: userData.email!,
         email: userData.email!,
         name: userData.name!,
         role: userData.role!,
