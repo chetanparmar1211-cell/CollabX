@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { ArrowLeft, Upload, Plus, X, Info, Target, Users, DollarSign, Calendar, CheckCircle, Handshake, Gift } from 'lucide-react';
-import { createCollaboration } from '@/services/db';
+import { createCollaboration } from '@/services/supabaseCollab';
 import { useAuth } from '@/contexts/AuthContext';
 
 const CreateCampaign = () => {

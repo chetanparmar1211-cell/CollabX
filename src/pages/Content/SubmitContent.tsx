@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { getCollaborationById, submitContent, listApplicationsByCreator } from '@/services/db';
+import { getCollaborationById, submitContent, listApplicationsByCreator } from '@/services/supabaseCollab';
 
 const SubmitContent: React.FC = () => {
 	const { id } = useParams();

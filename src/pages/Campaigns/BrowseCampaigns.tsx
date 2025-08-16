@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { listActiveCollaborations, applyToCollaboration } from '@/services/db';
+import { listActiveCollaborations, applyToCollaboration } from '@/services/supabaseCollab';
 import {
 	Search,
 	Star,

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
-import { listPendingContentByBrand, approveContent, rejectContent } from '@/services/db';
+import { listPendingContentByBrand, approveContent, rejectContent } from '@/services/supabaseCollab';
 import { CheckCircle, XCircle, Link as LinkIcon } from 'lucide-react';
 
 const PendingContent: React.FC = () => {

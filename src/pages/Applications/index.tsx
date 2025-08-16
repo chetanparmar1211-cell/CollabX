@@ -22,7 +22,7 @@ import {
 	Eye
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { listApplicationsByCreator } from '@/services/db';
+import { listApplicationsByCreator } from '@/services/supabaseCollab';
 
 const ApplicationsPage = () => {
 	const { user } = useAuth();

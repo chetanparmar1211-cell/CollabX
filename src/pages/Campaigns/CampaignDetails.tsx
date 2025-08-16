@@ -15,7 +15,7 @@ import {
 	listApplicationsByBrand,
 	approveApplication,
 	rejectApplication,
-} from '@/services/db';
+} from '@/services/supabaseCollab';
 import { Calendar, IndianRupee, Users, CheckCircle, XCircle } from 'lucide-react';
 
 const CampaignDetails: React.FC = () => {

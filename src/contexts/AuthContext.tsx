@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '@/types';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User as AppUser } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 interface AuthContextType {
-  user: User | null;
+  user: AppUser | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (userData: Partial<User> & { password: string }) => Promise<void>;
+  signup: (userData: Partial<AppUser> & { password: string }) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -19,76 +20,78 @@ export const useAuth = () => {
   return context;
 };
 
+async function fetchProfileUser(): Promise<AppUser | null> {
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  if (!authUser) return null;
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', authUser.id).maybeSingle();
+  const role = (profile?.role as AppUser['role']) || 'creator';
+  return {
+    id: authUser.id,
+    email: authUser.email || '',
+    name: profile?.name || authUser.email || 'User',
+    role,
+    avatar: profile?.avatar || undefined,
+    isVerified: true,
+    createdAt: authUser.created_at || new Date().toISOString(),
+    companyName: role === 'brand' ? (profile?.company_name || '') : undefined,
+  };
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored auth token and user data
-    const storedUser = localStorage.getItem('collabx_user');
-    const token = localStorage.getItem('collabx_token');
-    
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const init = async () => {
+      setIsLoading(true);
+      const current = await fetchProfileUser();
+      setUser(current);
+      setIsLoading(false);
+    };
+    init();
+    const { data: sub } = supabase.auth.onAuthStateChange(async () => {
+      const current = await fetchProfileUser();
+      setUser(current);
+    });
+    return () => {
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Mock login - in real app, this would be an API call
-      const mockUser: User = {
-        id: email,
-        email,
-        name: email.includes('brand') ? 'Brand User' : email.includes('admin') ? 'Admin User' : 'Creator User',
-        role: email.includes('brand') ? 'brand' : email.includes('admin') ? 'admin' : 'creator',
-        isVerified: true,
-        createdAt: new Date().toISOString(),
-        companyName: email.includes('brand') ? 'Sample Brand Co.' : undefined,
-        creatorProfile: email.includes('creator') ? 'https://instagram.com/creator' : undefined,
-        rating: email.includes('creator') ? 4.8 : undefined,
-        completedCollaborations: email.includes('creator') ? 45 : undefined,
-      };
-
-      localStorage.setItem('collabx_user', JSON.stringify(mockUser));
-      localStorage.setItem('collabx_token', 'mock-jwt-token');
-      setUser(mockUser);
-    } catch (error) {
-      throw new Error('Login failed');
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      const current = await fetchProfileUser();
+      setUser(current);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const signup = async (userData: Partial<User> & { password: string }) => {
+  const signup = async (userData: Partial<AppUser> & { password: string }) => {
     setIsLoading(true);
     try {
-      // Mock signup - in real app, this would be an API call
-      const mockUser: User = {
-        id: userData.email!,
-        email: userData.email!,
-        name: userData.name!,
-        role: userData.role!,
-        isVerified: false,
-        createdAt: new Date().toISOString(),
-        companyName: userData.companyName,
-        creatorProfile: userData.creatorProfile,
-      };
-
-      localStorage.setItem('collabx_user', JSON.stringify(mockUser));
-      localStorage.setItem('collabx_token', 'mock-jwt-token');
-      setUser(mockUser);
-    } catch (error) {
-      throw new Error('Signup failed');
+      const { data, error } = await supabase.auth.signUp({ email: userData.email!, password: userData.password });
+      if (error || !data.user) throw error || new Error('Signup failed');
+      // Create profile row
+      await supabase.from('profiles').insert({
+        id: data.user.id,
+        name: userData.name || data.user.email,
+        role: userData.role || 'creator',
+        company_name: userData.companyName || null,
+        avatar: null,
+      });
+      const current = await fetchProfileUser();
+      setUser(current);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('collabx_user');
-    localStorage.removeItem('collabx_token');
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
   };
 

@@ -27,7 +27,7 @@ import {
   Package
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { listCollaborationsByBrand } from '@/services/db';
+import { listCollaborationsByBrand } from '@/services/supabaseCollab';
 
 const MyCampaigns = () => {
   const [searchQuery, setSearchQuery] = useState('');
