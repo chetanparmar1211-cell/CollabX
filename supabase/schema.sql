@@ -77,38 +77,38 @@ create policy profiles_insert_self on profiles for insert with check (
 );
 
 -- Collaborations RLS
-create policy collab_select for select on collaborations using (
+create policy collab_select on collaborations for select using (
 	status = 'active' or brand_id = auth.uid() or exists (select 1 from profiles p where p.id = auth.uid() and p.role = 'admin')
 );
-create policy collab_insert for insert on collaborations with check (
+create policy collab_insert on collaborations for insert with check (
 	auth.uid() = brand_id
 );
-create policy collab_update for update on collaborations using (
+create policy collab_update on collaborations for update using (
 	brand_id = auth.uid() or exists (select 1 from profiles p where p.id = auth.uid() and p.role = 'admin')
 );
 
 -- Applications RLS
-create policy app_select for select on applications using (
+create policy app_select on applications for select using (
 	creator_id = auth.uid() or exists (
 		select 1 from collaborations c where c.id = collaboration_id and c.brand_id = auth.uid()
 	) or exists (select 1 from profiles p where p.id = auth.uid() and p.role = 'admin')
 );
-create policy app_insert for insert on applications with check (
+create policy app_insert on applications for insert with check (
 	auth.uid() = creator_id
 );
-create policy app_update_brand for update on applications using (
+create policy app_update_brand on applications for update using (
 	exists (select 1 from collaborations c where c.id = collaboration_id and c.brand_id = auth.uid())
 );
 
 -- Contents RLS
-create policy contents_select for select on contents using (
+create policy contents_select on contents for select using (
 	creator_id = auth.uid() or exists (
 		select 1 from collaborations c where c.id = collaboration_id and c.brand_id = auth.uid()
 	) or exists (select 1 from profiles p where p.id = auth.uid() and p.role = 'admin')
 );
-create policy contents_insert for insert on contents with check (
+create policy contents_insert on contents for insert with check (
 	auth.uid() = creator_id
 );
-create policy contents_update_brand for update on contents using (
+create policy contents_update_brand on contents for update using (
 	exists (select 1 from collaborations c where c.id = collaboration_id and c.brand_id = auth.uid())
 );
